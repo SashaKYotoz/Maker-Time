@@ -23,7 +23,7 @@ public class Gladiator {
             int xp, int dexterity,
             int level, int charisma,
             int basicAttack, int basicHp,
-            boolean haveShield
+            boolean hasShield
     ) {
         this.name = name;
         this.constitution = constitution;
@@ -34,7 +34,7 @@ public class Gladiator {
         this.charisma = charisma;
         this.basicAttack = basicAttack;
         this.basicHp = basicHp;
-        this.haveShield = haveShield;
+        this.haveShield = hasShield;
         this.actualHP = Math.round(this.basicHp * (this.constitution * 2.5f));
     }
     public String getName(){

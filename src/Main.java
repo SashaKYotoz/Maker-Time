@@ -1,8 +1,13 @@
+import com.google.gson.*;
 import enums.Class;
 import enums.GladiatorsPresents;
 import enums.MonsterVariant;
 import objects.Gladiator;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -14,42 +19,62 @@ public class Main {
     public static void main(String[] args) {
         String characterName;
         Gladiator gladiator = null;
+        boolean keepGoing = true;
         fineTextOutput(String.format("Hello dear, %s \n", characterName = scanner.nextLine()));
-        fineTextOutput("Would you like to choose character or create new one? \n");
-        System.out.println("write 'new' or 'template'");
-        switch (scanner.nextLine()) {
-            case "new" -> {
-                int randomClass = random.nextInt(0, 3);
-                Class characterClass = Class.values()[randomClass > Class.values().length ? 0 : randomClass];
-                switch (characterClass) {
-                    case SHOOTER -> gladiator = new Gladiator(characterName,
-                            1 + random.nextInt(),
-                            2 + random.nextInt(0, 3),
-                            0, 3 + random.nextInt(0, 5),
-                            0, 2 + random.nextInt(0, 4),
-                            6 + random.nextInt(0, 7), 10 * randNumber(1, 7), false);
-                    case WARRIOR -> gladiator = new Gladiator(characterName,
-                            3 + random.nextInt(0, 3),
-                            2 + random.nextInt(0, 3),
-                            0, 1 + random.nextInt(0, 5),
-                            0, 1 + random.nextInt(0, 4),
-                            6 + random.nextInt(0, 7), 10 * randNumber(1, 7), false);
-                    case TANK -> gladiator = new Gladiator(characterName,
-                            5 + random.nextInt(0, 4),
-                            1 + random.nextInt(0, 3),
-                            0, 1 + random.nextInt(0, 5),
-                            0, 1 + random.nextInt(0, 4),
-                            5 + random.nextInt(0, 5), 10 * randNumber(1, 7), true);
+        fineTextOutput("Would you like to choose character create new one or load from save? \n");
+        while (keepGoing) {
+            System.out.println("write 'new','template' or 'load'");
+            switch (scanner.nextLine()) {
+                case "new" -> {
+                    int randomClass = random.nextInt(Class.values().length);
+                    Class characterClass = Class.values()[randomClass];
+                    switch (characterClass) {
+                        case SHOOTER -> gladiator = new Gladiator(characterName,
+                                1 + randNumber(0,3),
+                                2 + random.nextInt(0, 3),
+                                0, 3 + random.nextInt(0, 5),
+                                0, 2 + random.nextInt(0, 4),
+                                6 + random.nextInt(0, 7), 10 * randNumber(1, 7), false);
+                        case WARRIOR -> gladiator = new Gladiator(characterName,
+                                3 + randNumber(0, 4),
+                                2 + random.nextInt(0, 3),
+                                0, 1 + random.nextInt(0, 5),
+                                0, 1 + random.nextInt(0, 4),
+                                6 + random.nextInt(0, 7), 10 * randNumber(1, 7), false);
+                        case TANK -> gladiator = new Gladiator(characterName,
+                                5 + randNumber(0, 5),
+                                1 + random.nextInt(0, 3),
+                                0, 1 + random.nextInt(0, 5),
+                                0, 1 + random.nextInt(0, 4),
+                                5 + random.nextInt(0, 5), 10 * randNumber(1, 7), true);
+                    }
+                    keepGoing = false;
                 }
-            }
-            default -> {
-                fineTextOutput(String.format("Choose hero from template: \n %s \n %s \n %s \n write: 1, 2 or 3 \n", GladiatorsPresents.DECIMUS, GladiatorsPresents.MARCUS, GladiatorsPresents.AURELIUS));
-                GladiatorsPresents selectedPresent = GladiatorsPresents.values()[scanner.nextInt() - 1];
-                gladiator = new Gladiator(selectedPresent.name(), selectedPresent.getConstitution(), selectedPresent.getStrength(), 0, selectedPresent.getDexterity(), 0, selectedPresent.getCharisma(), selectedPresent.getBasicAttack(), selectedPresent.getBasicHp(), selectedPresent.isHaveShield());
+                case "template" -> {
+                    fineTextOutput(String.format("Choose hero from template: \n %s \n %s \n %s \n write: 1, 2 or 3 \n", GladiatorsPresents.DECIMUS, GladiatorsPresents.MARCUS, GladiatorsPresents.AURELIUS));
+                    GladiatorsPresents selectedPresent = GladiatorsPresents.values()[scanner.nextInt() - 1];
+                    gladiator = new Gladiator(selectedPresent.name(), selectedPresent.getConstitution(), selectedPresent.getStrength(), 0, selectedPresent.getDexterity(), 0, selectedPresent.getCharisma(), selectedPresent.getBasicAttack(), selectedPresent.getBasicHp(), selectedPresent.isHaveShield());
+                    keepGoing = false;
+                }
+                case "load" -> {
+                    Gladiator loadedGladiator = loadFromFile(characterName);
+                    if (loadedGladiator != null) {
+                        gladiator = loadedGladiator;
+                        fineTextOutput(String.format("You've successfully loaded gladiator %s with stats: \n", characterName));
+                        fineTextOutput(String.format("Current xp: %s\n", gladiator.getXp()));
+                        fineTextOutput(String.format("Current level: %s\n", gladiator.getLevel()));
+                        fineTextOutput(String.format("Current strength: %s\n", gladiator.getStrength()));
+                        fineTextOutput(String.format("Current charisma: %s\n", gladiator.getCharisma()));
+                        fineTextOutput(String.format("Current dexterity: %s\n", gladiator.getDexterity()));
+                        fineTextOutput(String.format("Current constitution: %s\n", gladiator.getConstitution()));
+                        keepGoing = false;
+                    } else {
+                        fineTextOutput(String.format("Gladiator with name %s wasn't found \n", characterName));
+                    }
+                }
+                default -> System.out.println("Invalid input. Please write 'new', 'template' or 'save'.");
             }
         }
-        System.out.println(gladiator.getBasicHp());
-        System.out.println(gladiator.getConstitution());
         fineTextOutput(String.format("\"You chose gladiator '%s'. Present stats of your gladiator are: HP - %s; DP - %s",characterName,gladiator.getActualHP(),gladiator.getBasicAttack() + gladiator.getStrength()*3));
         fineTextOutput("\n......\n");
         while (true) {
@@ -61,12 +86,13 @@ public class Main {
                 switch (scanner.nextInt()){
                     case 1 -> travel(gladiator);
                     case 2 -> observeAttributes(gladiator);
-                    case 3 -> saveGame();
+                    case 3 -> saveGame(gladiator);
                 }
             }
         }
     }
-    private static void saveGame(){
+    private static void saveGame(Gladiator gladiator){
+        saveToFile(gladiator);
         System.exit(0);
     }
     private static void observeAttributes(Gladiator gladiator){
@@ -97,33 +123,42 @@ public class Main {
         }
     }
     private static void fight(Gladiator gladiator){
-        while (monster.getActualHP() > 0){
+        while (monster.getActualHP() >= 0 && gladiator.getActualHP() >= 0){
             System.out.println("To attack '1' or block '2'?");
             switch (scanner.nextInt()){
                 default -> {
                     try{
                         int damage = randNumber(gladiator.getBasicAttack(), gladiator.getBasicAttack() + gladiator.getStrength()*3) + 1;
-                        if (new Random().nextBoolean()){
+                        int dexterityBonus = gladiator.getDexterity() > 5 ? 5 + gladiator.getDexterity()/2 : gladiator.getDexterity();
+                        if (dexterityBonus/10f > random.nextFloat()){
+                            damage = damage+2*gladiator.getDexterity();
+                            fineTextOutput(String.format("Your dexterity blessed you, critical attack with: %s damage points\n",damage));
+                        }
+                        if (random.nextFloat() < 0.25){
                             fineTextOutput(monster + " decided to block\n");
                             int tmpDamage = monster.isHaveShield() ? damage/4 : damage/2;
                             monster.hurt(tmpDamage);
-                            fineTextOutput("You dealt " + tmpDamage + "points of damage \n");
+                            fineTextOutput("You've dealt " + tmpDamage + "points of damage \n");
                         }else {
                             monster.hurt(damage);
-                            fineTextOutput("You dealt " + damage + "points of damage \n");
+                            fineTextOutput("You've dealt " + damage + "points of damage \n");
                         }
                         System.out.println(monster.name() + " HP remained - " + monster.getActualHP());
                         Thread.sleep(1000);
                         damage = randNumber(monster.getBasicAttack(),monster.getBasicAttack() + monster.getStrength()*2) + 1;
+                        if (monster.getDexterity()/10f > random.nextFloat()){
+                            damage = damage+2+monster.getDexterity();
+                            fineTextOutput(String.format("%s's dexterity blessed its, critical attack with: %s damage points\n",monster,damage));
+                        }
                         gladiator.hurt(damage);
                         System.out.println(gladiator.getName() + " HP remained - " + gladiator.getActualHP());
                         if (monster.getActualHP() <= 0){
-                            fineTextOutput("You won \n");
+                            fineTextOutput("You've won \n");
                             int tmpXpReward = (int) Math.round(Math.sqrt(monster.getBasicHp()*monster.getBasicAttack() + monster.getConstitution()));
                             int xpReward = gladiator.getXp() + tmpXpReward;
                             gladiator.setXp(xpReward);
-                            fineTextOutput("You earned " + tmpXpReward + " experience\n");
-                            if (new Random().nextBoolean())
+                            fineTextOutput("You've earned " + tmpXpReward + " experience\n");
+                            if (random.nextBoolean())
                                 gladiator.healUp();
                         }
                     } catch (InterruptedException e) {
@@ -141,8 +176,8 @@ public class Main {
                 }
             }
         }
-        if (gladiator.getActualHP() < 0){
-            fineTextOutput("You ran out of HP\n");
+        if (gladiator.getActualHP() <= 0){
+            fineTextOutput("You've run out of HP\n");
             System.out.println("You were defeated by " + monster + "\n");
             fineTextOutput("You want to rebirth '1' or end the game '2'?\n");
             switch (scanner.nextInt()){
@@ -152,7 +187,7 @@ public class Main {
                 }
                 case 2 -> {
                     System.out.println("You decided to finish the game");
-                    System.exit(0);
+                    saveGame(gladiator);
                 }
             }
         }
@@ -161,18 +196,106 @@ public class Main {
         int number = randNumber(0, 100);
         int number1 = randNumber(0, 50) + gladiator.getCharisma();
         if (number1 >= number) {
-            System.out.println("You win. You get 10xp");
+            System.out.println("You've swayed your enemy. You've got 10xp");
             gladiator.setXp(gladiator.getXp() + 10);
+            gladiator.healUp();
         } else {
             System.out.println("NOOOO. FIGHT!");
             fight(gladiator);
         }
     }
+    private static void saveToFile(Gladiator gladiator){
+        try {
+            Path configDir = Paths.get("src","data");
+            if (!Files.exists(configDir))
+                Files.createDirectories(configDir);
+            Path CONTROLLERS_PATH = configDir.resolve("data.json");
+            JsonObject mainObject;
+            if (Files.exists(CONTROLLERS_PATH)) {
+                String jsonString = new String(Files.readAllBytes(CONTROLLERS_PATH));
+                mainObject = JsonParser.parseString(jsonString).getAsJsonObject();
+            } else {
+                mainObject = new JsonObject();
+                mainObject.add("entries", new JsonArray());
+            }
+
+            JsonArray entriesArray = mainObject.getAsJsonArray("entries");
+            boolean found = false;
+            for (JsonElement entry : entriesArray) {
+                JsonObject entryObject = entry.getAsJsonObject();
+                if (entryObject.get("gladiatorName").getAsString().equals(gladiator.getName())) {
+                    entryObject.addProperty("dexterity", gladiator.getDexterity());
+                    entryObject.addProperty("strength", gladiator.getStrength());
+                    entryObject.addProperty("basicAttack", gladiator.getBasicAttack());
+                    entryObject.addProperty("charisma", gladiator.getCharisma());
+                    entryObject.addProperty("constitution", gladiator.getConstitution());
+                    entryObject.addProperty("basicHp", gladiator.getBasicHp());
+                    entryObject.addProperty("currentXP", gladiator.getXp());
+                    entryObject.addProperty("level", gladiator.getLevel());
+                    entryObject.addProperty("hasShield", gladiator.isHaveShield());
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found) {
+                JsonObject newEntry = new JsonObject();
+                newEntry.addProperty("gladiatorName", gladiator.getName());
+                newEntry.addProperty("dexterity", gladiator.getDexterity());
+                newEntry.addProperty("strength", gladiator.getStrength());
+                newEntry.addProperty("basicAttack", gladiator.getBasicAttack());
+                newEntry.addProperty("charisma", gladiator.getCharisma());
+                newEntry.addProperty("constitution", gladiator.getConstitution());
+                newEntry.addProperty("basicHp", gladiator.getBasicHp());
+                newEntry.addProperty("currentXP",  gladiator.getXp());
+                newEntry.addProperty("level", gladiator.getLevel());
+                newEntry.addProperty("hasShield", gladiator.isHaveShield());
+                entriesArray.add(newEntry);
+            }
+
+            Files.write(CONTROLLERS_PATH, new Gson().toJson(mainObject).getBytes());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    private static Gladiator loadFromFile(String gladiatorName){
+       try{
+           Path configDir = Paths.get("src","data");
+           Path CONTROLLERS_PATH = configDir.resolve("data.json");
+           JsonObject mainObject;
+           if (Files.exists(CONTROLLERS_PATH)) {
+               String jsonString = new String(Files.readAllBytes(CONTROLLERS_PATH));
+               mainObject = JsonParser.parseString(jsonString).getAsJsonObject();
+           } else {
+               mainObject = new JsonObject();
+               mainObject.add("entries", new JsonArray());
+           }
+           JsonArray entriesArray = mainObject.getAsJsonArray("entries");
+           for (JsonElement entry : entriesArray) {
+               JsonObject entryObject = entry.getAsJsonObject();
+               if (entryObject.get("gladiatorName").getAsString().equals(gladiatorName)){
+                   return new Gladiator(gladiatorName,
+                        entryObject.get("constitution").getAsInt(),
+                        entryObject.get("strength").getAsInt(),
+                        entryObject.get("currentXP").getAsInt(),
+                        entryObject.get("dexterity").getAsInt(),
+                        entryObject.get("level").getAsInt(),
+                        entryObject.get("charisma").getAsInt(),
+                        entryObject.get("basicAttack").getAsInt(),
+                        entryObject.get("basicHp").getAsInt(),
+                        entryObject.get("hasShield").getAsBoolean());
+               }
+           }
+       }catch (IOException e){
+           System.out.println("Failed in loading gladiator");
+       }
+       return null;
+    }
     private static void fineTextOutput(String s) {
         try {
             for (int i = 0; i < s.length(); i++) {
                 System.out.print(s.charAt(i));
-                Thread.sleep(100);
+                Thread.sleep(75);
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -181,6 +304,6 @@ public class Main {
     public static int randNumber(int min, int max) {
         int random = new Random().nextInt(max - min) + min;
         System.out.println(random);
-        return Math.abs(random) > 1000 ? randNumber(min,max) : random;
+        return Math.abs(random) > 10000 ? randNumber(min,max) : random;
     }
 }
