@@ -96,6 +96,7 @@ public class Main {
                 gladiator.getActualHP(),
                 gladiator.getBasicAttack() + gladiator.getStrength() * 3));
         fineTextOutput("\n......\n");
+        checkShutDown(gladiator);
         while (true) {
             if (gladiator != null) {
                 fineTextOutput("Choose action to perform: \n");
@@ -110,7 +111,9 @@ public class Main {
             }
         }
     }
-
+    private static void checkShutDown(Gladiator gladiator){
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> saveToFile(gladiator)));
+    }
     private static void saveGame(Gladiator gladiator) {
         saveToFile(gladiator);
         System.exit(0);

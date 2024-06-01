@@ -1,1 +1,28 @@
-{"entries":[{"gladiatorName":"kua kua","dexterity":10,"strength":15,"basicAttack":12,"charisma":3,"constitution":4,"basicHp":100,"currentXP":38,"level":0,"hasShield":false},{"gladiatorName":"SashaKYotoz","dexterity":1,"strength":4,"basicAttack":9,"charisma":3,"constitution":5,"basicHp":20,"currentXP":0,"level":0,"hasShield":false}]}
+{
+  "entries": [
+    {
+      "gladiatorName": "kua kua",
+      "dexterity": 10,
+      "strength": 15,
+      "basicAttack": 12,
+      "charisma": 3,
+      "constitution": 4,
+      "basicHp": 100,
+      "currentXP": 38,
+      "level": 0,
+      "hasShield": false
+    },
+    {
+      "gladiatorName": "SashaKYotoz",
+      "dexterity": 1,
+      "strength": 10,
+      "basicAttack": 15,
+      "charisma": 3,
+      "constitution": 5,
+      "basicHp": 35,
+      "currentXP": 18,
+      "level": 0,
+      "hasShield": false
+    }
+  ]
+}

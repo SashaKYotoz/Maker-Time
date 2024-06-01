@@ -15,11 +15,11 @@
     {
       "gladiatorName": "SashaKYotoz",
       "dexterity": 1,
-      "strength": 4,
-      "basicAttack": 9,
+      "strength": 10,
+      "basicAttack": 15,
       "charisma": 3,
       "constitution": 5,
-      "basicHp": 20,
+      "basicHp": 35,
       "currentXP": 0,
       "level": 0,
       "hasShield": false
