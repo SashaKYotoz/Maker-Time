@@ -1,6 +1,7 @@
 package enums;
 
 public enum MonsterVariant {
+    DARL_OGR(Class.TANK,6,4,3,2,4,9,35,true),
     EVIL_WARRIOR(Class.WARRIOR, 5, 6, 2, 3, 5, 8, 30, false),
     DARK_ELF(Class.SHOOTER, 3, 8, 3, 2, 7, 8, 15, false),
     EVIL_GLADIATOR(Class.TANK, 6, 6, 1, 4, 4, 9, 30, true),
@@ -22,7 +23,6 @@ public enum MonsterVariant {
                    int basicHp, boolean haveShield) {
         this.constitution = constitution;
         this.strength = strength;
-        this.xp = xp;
         this.dexterity = dexterity;
         this.level = level;
         this.charisma = charisma;
